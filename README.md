@@ -9,4 +9,4 @@ The main objective of the project is to **define as precisely as possible the Pa
 
 **Context:**
 
-This project is a school project for the Data Science course of Pierres Desquelles at Polytech Paris-Saclay (2019-2020)
+This project is a school project for the Data Science course of Pierres Desesquelles at Polytech Paris-Saclay (2019-2020)
