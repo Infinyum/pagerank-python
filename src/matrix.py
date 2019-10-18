@@ -2,9 +2,10 @@ import numpy as np
 
 #Define the ratio of how empty our sparse matrices are
 EMPTINESS_RATIO = 0.75
-#Define the ratio of how many link our website matrices have
+#Define the ratio of how many outside link a website is having in the matrice
 LINK_EMPTINESS_RATIO = 0.75
 
+np.set_printoptions(precision=4)
 
 def isProbabilisticVector(vec):
     """
@@ -17,50 +18,110 @@ def isProbabilisticVector(vec):
 def generateProbabilisticVector(size, empty):
     """
     Function that generates a probabilistic vector (sum of its components = 1)
-    TODO
+    @parameter size, the size of the vector
+    @parameter empty, do we want an "empty" vector (for sparse matrix) => only a very limited amount of not-null component
+    @return a probabilistic vector
     """
 
     res = np.zeros(size)
 
-    #Generates the vector index to populate
-    emptyVecIndexes = np.random.choice(2,size, p=[LINK_EMPTINESS_RATIO,1-LINK_EMPTINESS_RATIO])
-    randomVec = np.random.random(size)
+    if(empty):
 
-    #populate those vectors
-    res[emptyVecIndexes==1] = randomVec[emptyVecIndexes==1]
-    total = res[emptyVecIndexes==1].sum()
+        #Generate the indexes to populate
+        emptyVecIndexes = np.random.choice(2,size, p=[LINK_EMPTINESS_RATIO,1-LINK_EMPTINESS_RATIO])
+        #Generate a random vector of the right size
+        randomVec = np.random.random(size)
+
+        #populate those vectors
+        res[emptyVecIndexes==1] = randomVec[emptyVecIndexes==1]
+
+    else:
+        #Generate an uniform random vector of the right size
+        res = np.random.uniform(0,1,size)
+
+    #Normalize the res vector
+    total = res.sum()
     if(total == 0):
         return res
     else:
         return res/total
 
 
-def generateRandomLinkMatrix(size, empty):
+def generateRandomStandardizedLinkMatrix(size, empty):
     """
     Function that generates a Random Link Matrix for the PageRank problem
-    This is equivalent to the L (for Link) matrix in the algorithm
+    This is equivalent to the S (for Standardized Link) matrix in the algorithm
     @parameter size -> int, the number of WebPage to rank (size of the matrix)
     @parameter emtpy -> bool, Do we use a sparse matrix ?
-    @return the NxN sized random generated matrix
+    @return the NxN sized (randomly generated) matrix
     """
 
     #We start by generating our matrix
     res = np.zeros((size,size),dtype=float);
 
     #If we want to work with a sparse matrix
-    if(empty):
+    #We Generate the index vector (witch vector to populate?)
+    emptyVecIndexes = np.random.choice(2,size, p=[EMPTINESS_RATIO,1-EMPTINESS_RATIO])
+    
 
-        #Generates the vector index to populate
-        emptyVecIndexes = np.random.choice(2,size, p=[EMPTINESS_RATIO,1-EMPTINESS_RATIO])
-        #populate those vectors
-        res[emptyVecIndexes==1] = generateProbabilisticVector(size,empty)
+    for i in range(size):
 
-    else:
-        print("TODOD")
+        ## SPARSE MATRIX ##
+        if(empty):
+
+            #We generate random vectors for only few columns
+            if(emptyVecIndexes[i]==1):
+                res[i] = generateProbabilisticVector(size,True)
+
+            #We postprocess the non empty columns to ensure certain properties (diag = 0 | sum = (strict) 1 )
+            if(res[i].sum()!=0):
+                index = np.random.choice(size,1)
+
+                while(index==i):
+                    index = np.random.choice(size,1)
+
+                res[i][index]+=res[i][i]
+                res[i][i]=0
+
+                #float precision sum problem => we ensure normalization of columns
+                if(isProbabilisticVector(res[i]) == False):
+                    diff = 1-res[i].sum()
+                    res[i][index]+=diff
+
+            #for vectors with no link => Same chances to go anywhere
+            else:
+                #fullfill empty vectors with the same prob
+                res[i]= np.full(size,1/size)
+
+        ## NORMAL MATRIX ##
+        else:
+            res[i] = generateProbabilisticVector(size,False)
+
+            #Very unlikely but we do it just to be sure
+            if res[i].sum()==0:
+
+                #fullfill empty vectors with the same prob
+                res[i]= np.full(size,1/size)
+            
+
+            #We postprocess the non empty columns to ensure certain properties (diag = 0 | sum = (strict) 1 )
+            else:
+                index = np.random.choice(size,1)
+
+                while(index==i):
+                    index = np.random.choice(size,1)
+
+                res[i][index]+=res[i][i]
+                res[i][i]=0
+
+                #float precision sum problem => we ensure normalization of columns
+                if(isProbabilisticVector(res[i]) == False):
+                    diff = 1-res[i].sum()
+                    res[i][index]+=diff
 
     #to remove
-    print(np.transpose(res));
+    #print(np.transpose(res));
     return np.transpose(res)
 
 #To remove
-generateRandomLinkMatrix(10,True)
+#generateRandomStandardizedLinkMatrix(7,True)
