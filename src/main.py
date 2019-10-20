@@ -20,10 +20,19 @@ def getOutlink(matrix):
         outlink[i] = np.count_nonzero(matrix.T[i])
     
     return outlink
+
+
+
+def getInlink(matrix):
+    inlink = {}
     
+    for i in range(0, matrix.shape[0]):
+        inlink[i] = np.flatnonzero(matrix[i])
+
+    return inlink
 
 
-def pageRank(matrix, k=0, damping=0.85):
+def pageRank(matrix, k=1, damping=0.85):
     # The number of rows in the matrix i.e. the number of pages
     N = matrix.shape[0]
 
@@ -33,21 +42,26 @@ def pageRank(matrix, k=0, damping=0.85):
 
     # Get the number of outlinks of each page from the matrix
     outlink = getOutlink(matrix)
+    # Get the indexes of the pages pointing to each page
+    inlink = getInlink(matrix)
 
     # PageRank algorithm running for k iterations
-    for _ in range(0, k):
+    while k > 0:
         newRank = np.zeros((N, 1))
+        
         # For each page
         for i in range(0, N):
-            newRank[i] = ((1 - damping) / N) + (damping * sum(rank[j] / outlink[j] for j in range(0, N)))
+            newRank[i] = ((1 - damping) / N) + (damping * sum(rank[j] / outlink[j] for j in inlink[i]))
+        
         rank, newRank = newRank, rank
+        k = k - 1
+
+    return rank
     
-    print(rank)
-    print(np.sum(rank))
 
 
 if __name__ == "__main__":
-    k = 1
+    k = 5
     damping = 0.85
     matrix = createMatrix()
-    pageRank(matrix, k, damping)
+    print(pageRank(matrix, k, damping))
