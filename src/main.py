@@ -1,4 +1,6 @@
 import numpy as np
+from matrix import *
+from scipy.sparse.linalg import eigs
 
 def createMatrix():
     line1 = np.array([0, 0.5, 0.2, 0, 0])
@@ -73,9 +75,70 @@ def pageRank(matrix, k=1, damping=0.85):
     return rank
     
 
+def pageRankMarkov(matrix, damping=0.85):
+    """
+    Page rank algorithm: take a link matrix and return a vector containing the rank of each page.
+    The rank corresponds to the 
+
+    Arguments:
+    matrix -- the link matrix
+    damping -- the probability a user continues to click on further links (default 0.85)
+    """
+    # The number of rows in the matrix i.e. the number of pages
+    N = matrix.shape[0]
+    
+    increment = (1.0 - damping) / N
+    
+    # Calculate the Markov matrix
+    M = (matrix * damping) + increment
+
+    # Get the eigenvector for eigenvalue 1
+    _,v = eigs(M, k=1, sigma=1)
+
+    # Normalize vector
+    v = np.real(v)
+    v = v / np.sum(v)
+
+    return v
+
+
+def pageRankMarkovByStep(matrix, vec, damping=0.85, k=1):
+    """
+    Page rank algorithm: take a link matrix and return a vector containing the distribution of the surfers population after k iterations
+
+    Arguments:
+    matrix -- the link matrix
+    vec -- the initial distribution of surfers in the Markov chain
+    damping -- the probability a user continues to click on further links (default 0.85)
+    """
+    # The number of rows in the matrix i.e. the number of pages
+    N = matrix.shape[0]
+    
+    increment = (1.0 - damping) / N
+    
+    # Calculate the Markov matrix
+    M = (matrix * damping) + increment
+
+    while k > 0:
+        vec = M.dot(vec)
+        k = k - 1
+
+    return vec
+
 
 if __name__ == "__main__":
-    k = 5
-    damping = 0.85
-    matrix = createMatrix()
-    print(pageRank(matrix, k, damping))
+    damping = 0.1
+    k = 1
+    N = 10000
+    
+    matrix = generateRandomStandardizedLinkMatrix(N, False, True)
+    #initDistribution = generateProbabilisticVector(N, False)
+    initDistribution = np.zeros(N)
+    initDistribution[0] = 1.0
+
+    endDistribution = pageRankMarkov(matrix, damping)
+    distributionAfterK = pageRankMarkovByStep(matrix, initDistribution, damping, k)
+
+    print(np.average(np.abs(endDistribution.T[0] - distributionAfterK)))
+    #print("\n")
+    #print(distributionAfterK)

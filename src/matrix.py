@@ -5,7 +5,7 @@ EMPTINESS_RATIO = 0.75
 #Define the ratio of how many outside links a website is having in the matrix
 LINK_EMPTINESS_RATIO = 0.75
 
-np.set_printoptions(precision=4)
+#np.set_printoptions(precision=3)
 
 def isProbabilisticVector(vec):
     """
