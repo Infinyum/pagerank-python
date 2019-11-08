@@ -13,6 +13,9 @@ def createMatrix():
 
 
 def getOutlink(matrix):
+    """
+    Take a link matrix and return a vector containing the number of outlinks of each page.
+    """
     N = matrix.shape[0]
     outlink = np.zeros(shape=(N, 1))
 
@@ -24,6 +27,9 @@ def getOutlink(matrix):
 
 
 def getInlink(matrix):
+    """
+    Take a link matrix and return a vector containing the number of inlinks of each page.
+    """
     inlink = {}
     
     for i in range(0, matrix.shape[0]):
@@ -33,6 +39,14 @@ def getInlink(matrix):
 
 
 def pageRank(matrix, k=1, damping=0.85):
+    """
+    Page rank algorithm: take a link matrix and return a vector containing the rank of each page.
+
+    Arguments:
+    matrix -- the link matrix
+    k -- the number of iterations for the page rank algorithm (default 1)
+    damping -- the probability a user continues to click on further links (default 0.85)
+    """
     # The number of rows in the matrix i.e. the number of pages
     N = matrix.shape[0]
 
