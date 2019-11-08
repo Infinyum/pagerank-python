@@ -2,7 +2,7 @@ import numpy as np
 
 #Define the ratio of how empty our sparse matrices are
 EMPTINESS_RATIO = 0.75
-#Define the ratio of how many outside link a website is having in the matrice
+#Define the ratio of how many outside links a website is having in the matrix
 LINK_EMPTINESS_RATIO = 0.75
 
 np.set_printoptions(precision=4)
@@ -47,12 +47,13 @@ def generateProbabilisticVector(size, empty):
         return res/total
 
 
-def generateRandomStandardizedLinkMatrix(size, empty):
+def generateRandomStandardizedLinkMatrix(size, empty, autoRefLink):
     """
     Function that generates a Random Link Matrix for the PageRank problem
     This is equivalent to the S (for Standardized Link) matrix in the algorithm
     @parameter size -> int, the number of WebPage to rank (size of the matrix)
     @parameter emtpy -> bool, Do we use a sparse matrix ?
+    @parameter autoRefLink -> bool, Do we authorize link on the same website ?
     @return the NxN sized (randomly generated) matrix
     """
 
@@ -62,7 +63,7 @@ def generateRandomStandardizedLinkMatrix(size, empty):
     #If we want to work with a sparse matrix
     #We Generate the index vector (witch vector to populate?)
     emptyVecIndexes = np.random.choice(2,size, p=[EMPTINESS_RATIO,1-EMPTINESS_RATIO])
-    
+
 
     for i in range(size):
 
@@ -80,8 +81,10 @@ def generateRandomStandardizedLinkMatrix(size, empty):
                 while(index==i):
                     index = np.random.choice(size,1)
 
-                res[i][index]+=res[i][i]
-                res[i][i]=0
+
+                if(autoRefLink==False):
+                    res[i][index]+=res[i][i]
+                    res[i][i]=0
 
                 #float precision sum problem => we ensure normalization of columns
                 if(isProbabilisticVector(res[i]) == False):
@@ -102,7 +105,7 @@ def generateRandomStandardizedLinkMatrix(size, empty):
 
                 #fullfill empty vectors with the same prob
                 res[i]= np.full(size,1/size)
-            
+
 
             #We postprocess the non empty columns to ensure certain properties (diag = 0 | sum = (strict) 1 )
             else:
@@ -111,8 +114,9 @@ def generateRandomStandardizedLinkMatrix(size, empty):
                 while(index==i):
                     index = np.random.choice(size,1)
 
-                res[i][index]+=res[i][i]
-                res[i][i]=0
+                if(autoRefLink==False):
+                    res[i][index]+=res[i][i]
+                    res[i][i]=0
 
                 #float precision sum problem => we ensure normalization of columns
                 if(isProbabilisticVector(res[i]) == False):
@@ -124,4 +128,4 @@ def generateRandomStandardizedLinkMatrix(size, empty):
     return np.transpose(res)
 
 #To remove
-#generateRandomStandardizedLinkMatrix(7,True)
+#generateRandomStandardizedLinkMatrix(7,True,True)
