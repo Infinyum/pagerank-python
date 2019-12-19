@@ -127,18 +127,20 @@ def pageRankMarkovByStep(matrix, vec, damping=0.85, k=1):
 
 
 if __name__ == "__main__":
-    damping = 0.1
-    k = 1
     N = 10000
-    
+    k = 10
+    damping = 0.85
     matrix = generateRandomStandardizedLinkMatrix(N, False, True)
-    #initDistribution = generateProbabilisticVector(N, False)
-    initDistribution = np.zeros(N)
-    initDistribution[0] = 1.0
+
+    initialDistribution = np.zeros(N)
+    part = 1.0 / N
+    for i in range(0, N):
+        initialDistribution[i] = part
 
     endDistribution = pageRankMarkov(matrix, damping)
-    distributionAfterK = pageRankMarkovByStep(matrix, initDistribution, damping, k)
-
-    print(np.average(np.abs(endDistribution.T[0] - distributionAfterK)))
-    #print("\n")
-    #print(distributionAfterK)
+    distributionAfterK = pageRankMarkovByStep(matrix, initialDistribution, damping, k)
+    
+    print("After " + str(k) + " iterations:\n")
+    print(distributionAfterK)
+    print("\n\nAfter an infinite number of iterations:\n")
+    print(endDistribution.T[0])   
