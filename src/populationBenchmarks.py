@@ -1,7 +1,7 @@
 from matrix import *
 
 if __name__ == "__main__":
-	N = 10000
+	N = 1000
 	matrix = generateRandomStandardizedLinkMatrix(N, True, True)
 
 	setup1 = """from main import pageRankMarkovByStep, pageRankMarkov
@@ -55,8 +55,8 @@ for i in range(0, N):
 	import timeit
 
 	#print("k = 10, all in the first page")
-	print(timeit.timeit("pageRankMarkovByStep(matrix, initialDistribution, damping, k)", setup=setup1, number=1))
-	#print(timeit.timeit("pageRankMarkov(matrix, k)", setup=setup1, number=1))
+	#print(timeit.timeit("pageRankMarkovByStep(matrix, initialDistribution, damping, k)", setup=setup1, number=1))
+	print(timeit.timeit("pageRankMarkov(matrix, k)", setup=setup1, number=1))
 
 	"""print("\nk = 100, all in the first page")
 	print(timeit.timeit("pageRankMarkovByStep(matrix, initialDistribution, damping, k)", setup=setup2, number=1))
