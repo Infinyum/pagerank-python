@@ -2,14 +2,14 @@ from matrix import *
 
 if __name__ == "__main__":
 	N = 10000
-	matrix = generateRandomStandardizedLinkMatrix(N, False, True)
+	matrix = generateRandomStandardizedLinkMatrix(N, True, True)
 
-	setup1 = """from main import pageRankMarkovByStep
+	setup1 = """from main import pageRankMarkovByStep, pageRankMarkov
 from __main__ import N, matrix
 import numpy as np
 
 damping = 0.85
-k = 10
+k = 30
 
 initialDistribution = np.zeros(N)
 initialDistribution[0] = 1.0
@@ -54,14 +54,15 @@ for i in range(0, N):
 
 	import timeit
 
-	print("k = 10, all in the first page")
+	#print("k = 10, all in the first page")
 	print(timeit.timeit("pageRankMarkovByStep(matrix, initialDistribution, damping, k)", setup=setup1, number=1))
+	#print(timeit.timeit("pageRankMarkov(matrix, k)", setup=setup1, number=1))
 
-	print("\nk = 100, all in the first page")
+	"""print("\nk = 100, all in the first page")
 	print(timeit.timeit("pageRankMarkovByStep(matrix, initialDistribution, damping, k)", setup=setup2, number=1))
 
 	print("\nk = 10, all spread equally on all pages")
 	print(timeit.timeit("pageRankMarkovByStep(matrix, initialDistribution, damping, k)", setup=setup3, number=1))
 
 	print("\nk = 100, all spread equally on all pages")
-	print(timeit.timeit("pageRankMarkovByStep(matrix, initialDistribution, damping, k)", setup=setup4, number=1))
+	print(timeit.timeit("pageRankMarkovByStep(matrix, initialDistribution, damping, k)", setup=setup4, number=1))"""
