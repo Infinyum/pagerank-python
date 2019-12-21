@@ -138,7 +138,7 @@ def selfReferencingMatrixIncremental(matrix,itLimit=100):
 
 N = 100
 
-matrix = generateRandomStandardizedLinkMatrix(N,False,True)
+matrix = generateRandomStandardizedLinkMatrix(N,True,True)
 
 # The first page only reference itself
 #for i in range(0, N):
